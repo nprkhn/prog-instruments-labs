@@ -1,8 +1,9 @@
-import hashlib
-import random
 import datetime
-import json
+import random
 from typing import List, Dict, Optional
+import hashlib
+import json
+
 
 class Transaction:
     """Класс для представления банковской транзакции"""
@@ -18,6 +19,7 @@ class Transaction:
         self.timestamp = datetime.datetime.now()
         self.status = "pending"
     
+    
     def execute(self) -> bool:
         """Выполнение транзакции"""
         try:
@@ -26,6 +28,7 @@ class Transaction:
         except Exception as e:
             self.status = "failed"
             return False
+    
     
     def to_dict(self) -> Dict:
         """Конвертация транзакции в словарь"""
@@ -40,9 +43,11 @@ class Transaction:
             'status': self.status
         }
     
+    
     def __str__(self) -> str:
         return (f"Transaction {self.transaction_id}: {self.transaction_type} "
                 f"${self.amount:.2f} from {self.from_account} to {self.to_account}")
+
 
 class BankAccount:
     """Класс для представления банковского счета"""
@@ -55,6 +60,7 @@ class BankAccount:
         self.is_active = True
         self.created_date = datetime.datetime.now()
         self.account_type = "checking"  # 'checking', 'savings', 'business'
+    
     
     def deposit(self, amount: float, description: str = "") -> bool:
         """Пополнение счета"""
@@ -76,6 +82,7 @@ class BankAccount:
             print(f"Успешное пополнение: ${amount:.2f}")
             return True
         return False
+    
     
     def withdraw(self, amount: float, description: str = "") -> bool:
         """Снятие средств"""
@@ -101,6 +108,7 @@ class BankAccount:
             print(f"Успешное снятие: ${amount:.2f}")
             return True
         return False
+    
     
     def transfer(self, to_account: 'BankAccount', amount: float, description: str = "") -> bool:
         """Перевод средств на другой счет"""
@@ -128,13 +136,16 @@ class BankAccount:
             return True
         return False
     
+    
     def get_balance(self) -> float:
         """Получение текущего баланса"""
         return self.balance
     
+    
     def get_transaction_history(self) -> List[Transaction]:
         """Получение истории транзакций"""
         return self.transactions
+    
     
     def get_account_info(self) -> Dict:
         """Получение информации о счете"""
@@ -148,6 +159,7 @@ class BankAccount:
             'total_transactions': len(self.transactions)
         }
     
+    
     def deactivate(self) -> bool:
         """Деактивация счета"""
         if self.balance == 0:
@@ -156,10 +168,12 @@ class BankAccount:
         print("Нельзя деактивировать счет с ненулевым балансом")
         return False
     
+    
     def __str__(self) -> str:
         status = "активен" if self.is_active else "не активен"
         return (f"Счет {self.account_number} ({self.account_holder}): "
                 f"${self.balance:.2f}, {status}")
+
 
 class Bank:
     """Класс для представления банка"""
@@ -168,6 +182,7 @@ class Bank:
         self.bank_name = bank_name
         self.accounts: Dict[str, BankAccount] = {}
         self.total_transactions = 0
+    
     
     def create_account(self, account_holder: str, initial_deposit: float = 0.0) -> BankAccount:
         """Создание нового счета"""
@@ -186,9 +201,11 @@ class Bank:
         print(f"Создан новый счет {account_number} для {account_holder}")
         return new_account
     
+    
     def get_account(self, account_number: str) -> Optional[BankAccount]:
         """Получение счета по номеру"""
         return self.accounts.get(account_number)
+    
     
     def close_account(self, account_number: str) -> bool:
         """Закрытие счета"""
@@ -202,9 +219,11 @@ class Bank:
             print(f"Счет {account_number} не найден")
         return False
     
+    
     def get_total_deposits(self) -> float:
         """Общая сумма депозитов в банке"""
         return sum(account.balance for account in self.accounts.values())
+    
     
     def get_bank_statistics(self) -> Dict:
         """Статистика банка"""
@@ -220,10 +239,12 @@ class Bank:
             'total_transactions': total_transactions
         }
     
+    
     def find_accounts_by_holder(self, account_holder: str) -> List[BankAccount]:
         """Поиск счетов по владельцу"""
         return [account for account in self.accounts.values() 
                 if account.account_holder.lower() == account_holder.lower()]
+    
     
     def save_to_file(self, filename: str) -> bool:
         """Сохранение данных банка в файл"""
@@ -243,6 +264,7 @@ class Bank:
             
         print(f"Данные банка сохранены в {filename}")
         return True
+
 
 def DemoBankSystem():
     """Демонстрация работы банковской системы"""
@@ -324,6 +346,7 @@ def DemoBankSystem():
     bank.save_to_file("bank_data.json")
     
     print("\nДемонстрация завершена!")
+
 
 if __name__ == "__main__":
     DemoBankSystem()
