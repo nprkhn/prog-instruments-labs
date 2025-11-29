@@ -70,19 +70,19 @@ class Transaction:
         self.timestamp = datetime.datetime.now()
         self.status = "pending"
         
-        logger.debug(f"Создана транзакция {transaction_id}: {transaction_type} на сумму {amount:.2f} "
-                    f"от {from_account} к {to_account}")
+        logger.debug("Создана транзакция %s: %s на сумму %.2f от %s к %s", 
+                    transaction_id, transaction_type, amount, from_account, to_account)
     
 
     def execute(self) -> bool:
         """Выполнение транзакции"""
         try:
-            logger.info(f"Выполнение транзакции {self.transaction_id}")
+            logger.info("Выполнение транзакции %s", self.transaction_id)
             self.status = "completed"
-            logger.debug(f"Транзакция {self.transaction_id} успешно выполнена")
+            logger.debug("Транзакция %s успешно выполнена", self.transaction_id)
             return True
         except Exception as e:
-            logger.error(f"Ошибка выполнения транзакции {self.transaction_id}: {e}")
+            logger.error("Ошибка выполнения транзакции %s: %s", self.transaction_id, e)
             self.status = "failed"
             return False
     
@@ -118,21 +118,22 @@ class BankAccount:
         self.created_date = datetime.datetime.now()
         self.account_type = "checking"  # 'checking', 'savings', 'business'
         
-        logger.info(f"Создан банковский счет {account_number} для владельца {account_holder} "
-                   f"с начальным балансом {initial_balance:.2f}")
+        logger.info("Создан банковский счет %s для владельца %s с начальным балансом %.2f", 
+                   account_number, account_holder, initial_balance)
     
 
     def deposit(self, amount: float, description: str = "") -> bool:
         """Пополнение счета"""
-        logger.info(f"Пополнение счета {self.account_number} на сумму {amount:.2f}")
+        logger.info("Пополнение счета %s на сумму %.2f", self.account_number, amount)
         
         if amount <= 0:
-            logger.warning(f"Попытка пополнения счета {self.account_number} неверной суммой: {amount:.2f}")
+            logger.warning("Попытка пополнения счета %s неверной суммой: %.2f", 
+                          self.account_number, amount)
             print("Сумма пополнения должна быть положительной")
             return False
         
         if not self.is_active:
-            logger.warning(f"Попытка пополнения неактивного счета {self.account_number}")
+            logger.warning("Попытка пополнения неактивного счета %s", self.account_number)
             print("Счет не активен")
             return False
         
@@ -143,31 +144,33 @@ class BankAccount:
         if transaction.execute():
             self.balance += amount
             self.transactions.append(transaction)
-            logger.info(f"Успешное пополнение счета {self.account_number} на {amount:.2f}. "
-                       f"Новый баланс: {self.balance:.2f}")
+            logger.info("Успешное пополнение счета %s на %.2f. Новый баланс: %.2f", 
+                       self.account_number, amount, self.balance)
             print(f"Успешное пополнение: ${amount:.2f}")
             return True
         
-        logger.error(f"Ошибка при пополнении счета {self.account_number}")
+        logger.error("Ошибка при пополнении счета %s", self.account_number)
         return False
     
 
     def withdraw(self, amount: float, description: str = "") -> bool:
         """Снятие средств"""
-        logger.info(f"Снятие средств со счета {self.account_number} суммы {amount:.2f}")
+        logger.info("Снятие средств со счета %s суммы %.2f", self.account_number, amount)
         
         if amount <= 0:
-            logger.warning(f"Попытка снятия средств со счета {self.account_number} неверной суммы: {amount:.2f}")
+            logger.warning("Попытка снятия средств со счета %s неверной суммы: %.2f", 
+                          self.account_number, amount)
             print("Сумма снятия должна быть положительной")
             return False
         
         if amount > self.balance:
-            logger.warning(f"Недостаточно средств на счете {self.account_number}.")
+            logger.warning("Недостаточно средств на счете %s. Запрошено: %.2f, доступно: %.2f", 
+                          self.account_number, amount, self.balance)
             print("Недостаточно средств на счете")
             return False
         
         if not self.is_active:
-            logger.warning(f"Попытка снятия средств с неактивного счета {self.account_number}")
+            logger.warning("Попытка снятия средств с неактивного счета %s", self.account_number)
             print("Счет неактивен")
             return False
         
@@ -178,33 +181,33 @@ class BankAccount:
         if transaction.execute():
             self.balance -= amount
             self.transactions.append(transaction)
-            logger.info(f"Успешное снятие средств со счета {self.account_number} на {amount:.2f}. "
-                       f"Новый баланс: {self.balance:.2f}")
+            logger.info("Успешное снятие средств со счета %s на %.2f. Новый баланс: %.2f", 
+                       self.account_number, amount, self.balance)
             print(f"Успешное снятие: ${amount:.2f}")
             return True
         
-        logger.error(f"Ошибка при выполнении транзакции снятия для счета {self.account_number}")
+        logger.error("Ошибка при выполнении транзакции снятия для счета %s", self.account_number)
         return False
     
 
     def transfer(self, to_account: 'BankAccount', amount: float, description: str = "") -> bool:
         """Перевод средств на другой счет"""
-        logger.info(f"Перевод {amount:.2f} с {self.account_number} на {to_account.account_number}")
+        logger.info("Перевод %.2f с %s на %s", amount, self.account_number, to_account.account_number)
         
         if amount <= 0:
-            logger.warning(f"Попытка перевода неверной суммы: {amount:.2f}")
+            logger.warning("Попытка перевода неверной суммы: %.2f", amount)
             print("Сумма перевода должна быть положительной")
             return False
         
         if amount > self.balance:
-            logger.warning(f"Недостаточно средств для перевода с {self.account_number}. "
-                          f"Запрошено: {amount:.2f}, доступно: {self.balance:.2f}")
+            logger.warning("Недостаточно средств для перевода с %s. Запрошено: %.2f, доступно: %.2f", 
+                          self.account_number, amount, self.balance)
             print("Недостаточно средств для перевода")
             return False
         
         if not self.is_active or not to_account.is_active:
-            logger.warning(f"Попытка перевода с/на неактивный счет. "
-                          f"Источник активен: {self.is_active}, Цель активен: {to_account.is_active}")
+            logger.warning("Попытка перевода с/на неактивный счет. Источник активен: %s, Цель активен: %s", 
+                          self.is_active, to_account.is_active)
             print("Один из счетов неактивен")
             return False
         
@@ -217,25 +220,27 @@ class BankAccount:
             to_account.balance += amount
             self.transactions.append(transaction)
             to_account.transactions.append(transaction)
-            logger.info(f"Успешный перевод {amount:.2f} с {self.account_number} на {to_account.account_number}. "
-                       f"Баланс источника: {self.balance:.2f}, баланс цели: {to_account.balance:.2f}")
+            logger.info("Успешный перевод %.2f с %s на %s. Баланс источника: %.2f, баланс цели: %.2f", 
+                       amount, self.account_number, to_account.account_number, 
+                       self.balance, to_account.balance)
             print(f"Успешный перевод: ${amount:.2f} на счет {to_account.account_number}")
             return True
         
-        logger.error(f"Ошибка при выполнении перевода между {self.account_number} и {to_account.account_number}")
+        logger.error("Ошибка при выполнении перевода между %s и %s", 
+                    self.account_number, to_account.account_number)
         return False
     
 
     def get_balance(self) -> float:
         """Получение текущего баланса"""
-        logger.debug(f"Баланса для счета {self.account_number}: {self.balance:.2f}")
+        logger.debug("Баланса для счета %s: %.2f", self.account_number, self.balance)
         return self.balance
     
 
     def get_transaction_history(self) -> List[Transaction]:
         """Получение истории транзакций"""
-        logger.debug(f"Истории транзакций для счета {self.account_number}. "
-                    f"Количество транзакций: {len(self.transactions)}")
+        logger.debug("Истории транзакций для счета %s. Количество транзакций: %d", 
+                    self.account_number, len(self.transactions))
         return self.transactions
     
 
@@ -251,20 +256,21 @@ class BankAccount:
             'total_transactions': len(self.transactions)
         }
         
-        logger.debug(f"Информация о счете {self.account_number}")
+        logger.debug("Информация о счете %s", self.account_number)
         return info
     
 
     def deactivate(self) -> bool:
         """Деактивация счета"""
-        logger.info(f"Деактивация счета {self.account_number}")
+        logger.info("Деактивация счета %s", self.account_number)
         
         if self.balance == 0:
             self.is_active = False
-            logger.info(f"Счет {self.account_number} успешно деактивирован")
+            logger.info("Счет %s успешно деактивирован", self.account_number)
             return True
         
-        logger.warning(f"Попытка деактивации счета {self.account_number} с ненулевым балансом: {self.balance:.2f}")
+        logger.warning("Попытка деактивации счета %s с ненулевым балансом: %.2f", 
+                      self.account_number, self.balance)
         print("Нельзя деактивировать счет с ненулевым балансом")
         return False
     
@@ -283,12 +289,13 @@ class Bank:
         self.accounts: Dict[str, BankAccount] = {}
         self.total_transactions = 0
         
-        logger.info(f"Наименование банка: {bank_name}")
+        logger.info("Наименование банка: %s", bank_name)
     
 
     def create_account(self, account_holder: str, initial_deposit: float = 0.0) -> BankAccount:
         """Создание нового счета"""
-        logger.info(f"Создание счета для {account_holder} с начальным депозитом {initial_deposit:.2f}")
+        logger.info("Создание счета для %s с начальным депозитом %.2f", 
+                   account_holder, initial_deposit)
         
         account_number = f"ACC{random.randint(10000000, 99999999)}"
         
@@ -307,7 +314,7 @@ class Bank:
         if initial_deposit > 0:
             new_account.deposit(initial_deposit, "Первоначальный взнос")
         
-        logger.info(f"Создан новый счет {account_number} для {account_holder}")
+        logger.info("Создан новый счет %s для %s", account_number, account_holder)
         print(f"Создан новый счет {account_number} для {account_holder}")
         return new_account
     
@@ -316,25 +323,25 @@ class Bank:
         """Получение счета по номеру"""
         account = self.accounts.get(account_number)
         if account:
-            logger.debug(f"Найден счет {account_number}")
+            logger.debug("Найден счет %s", account_number)
         else:
-            logger.warning(f"Счет {account_number} не найден")
+            logger.warning("Счет %s не найден", account_number)
         return account
     
 
     def close_account(self, account_number: str) -> bool:
         """Закрытие счета"""
-        logger.info(f"Закрытие счета {account_number}")
+        logger.info("Закрытие счета %s", account_number)
         
         account = self.get_account(account_number)
         if account:
             if account.deactivate():
                 del self.accounts[account_number]
-                logger.info(f"Счет {account_number} успешно закрыт и удален")
+                logger.info("Счет %s успешно закрыт и удален", account_number)
                 print(f"Счет {account_number} закрыт")
                 return True
         else:
-            logger.error(f"Попытка закрытия несуществующего счета {account_number}")
+            logger.error("Попытка закрытия несуществующего счета %s", account_number)
             print(f"Счет {account_number} не найден")
         return False
     
@@ -342,7 +349,7 @@ class Bank:
     def get_total_deposits(self) -> float:
         """Общая сумма депозитов в банке"""
         total = sum(account.balance for account in self.accounts.values())
-        logger.debug(f"Общая сумма депозитов в банке {self.bank_name}: {total:.2f}")
+        logger.debug("Общая сумма депозитов в банке %s: %.2f", self.bank_name, total)
         return total
     
 
@@ -360,7 +367,7 @@ class Bank:
             'total_transactions': total_transactions
         }
         
-        logger.info(f"Статистика банка {self.bank_name}: {stats}")
+        logger.info("Статистика банка %s: %s", self.bank_name, stats)
         return stats
     
 
@@ -369,13 +376,14 @@ class Bank:
         accounts = [account for account in self.accounts.values() 
                    if account.account_holder.lower() == account_holder.lower()]
         
-        logger.debug(f"Поиск счетов для владельца {account_holder}. Найдено: {len(accounts)}")
+        logger.debug("Поиск счетов для владельца %s. Найдено: %d", 
+                    account_holder, len(accounts))
         return accounts
     
 
     def save_to_file(self, filename: str) -> bool:
         """Сохранение данных банка в файл"""
-        logger.info(f"Сохранение данных банка в файл {filename}")
+        logger.info("Сохранение данных банка в файл %s", filename)
         
         try:
             data = {
@@ -392,12 +400,12 @@ class Bank:
             with open(filename, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
                 
-            logger.info(f"Данные банка успешно сохранены в {filename}")
+            logger.info("Данные банка успешно сохранены в %s", filename)
             print(f"Данные банка сохранены в {filename}")
             return True
             
         except Exception as e:
-            logger.error(f"Ошибка при сохранении данных в файл {filename}: {e}")
+            logger.error("Ошибка при сохранении данных в файл %s: %s", filename, e)
             return False
 
 
@@ -461,7 +469,7 @@ def DemoBankSystem():
         print("\nДемонстрация завершена!")
         
     except Exception as e:
-        logger.critical(f"Критическая ошибка в демонстрационной системе: {e}")
+        logger.critical("Критическая ошибка в демонстрационной системе: %s", e)
         print(f"Произошла критическая ошибка: {e}")
 
 
