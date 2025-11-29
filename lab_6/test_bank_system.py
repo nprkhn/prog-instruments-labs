@@ -70,6 +70,8 @@ class TestBankAccount:
         (1000.0, 0.0, 1000.0, False),
         (1000.0, -100.0, 1000.0, False),
     ])
+    
+    
     def test_deposit_various_amounts(self, initial_balance, deposit_amount, expected_balance, should_succeed):
         """Параметризованный тест пополнения"""
         self.account.balance = initial_balance
